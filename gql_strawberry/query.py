@@ -1,7 +1,7 @@
 import typing
 import strawberry
-from type import Broker
-from data import brokers
+from .type import Broker
+from .data import brokers
 
 Item = typing.TypeVar("Item")
 

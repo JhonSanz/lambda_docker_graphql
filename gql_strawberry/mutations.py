@@ -1,6 +1,6 @@
 import strawberry
-from type import Broker
-from data import brokers
+from .type import Broker
+from .data import brokers
 
 @strawberry.type
 class Mutation:

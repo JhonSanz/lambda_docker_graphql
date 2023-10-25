@@ -6,13 +6,13 @@ from .data import brokers
 class Mutation:
     @strawberry.field
     def add_broker(self, name: str, website: str) -> Broker:
-        new_broker = Broker.from_row(**{
-            "id": len(brokers) + 1,
+        new_broker = Broker.from_row({
+            "id": str(len(brokers) + 1),
             "name": name,
             "website": website
         })
         brokers.append({
-            "id": len(brokers) + 1,
+            "id": str(len(brokers) + 1),
             "name": name,
             "website": website
         })

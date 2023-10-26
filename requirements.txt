@@ -1,1 +1,2 @@
 strawberry-graphql==0.209.8
+boto3==1.28.71

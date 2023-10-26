@@ -1,7 +1,13 @@
 import typing
 import strawberry
+import boto3
+from boto3.dynamodb.conditions import Key, Attr
 from .type import Broker
 from .data import brokers
+
+
+dynamodb = boto3.resource('dynamodb')
+table = dynamodb.Table("broker")
 
 Item = typing.TypeVar("Item")
 
@@ -55,7 +61,7 @@ def get_pagination_window(
 
 @strawberry.type
 class Query:
-    @strawberry.field(description="Get a list of users.")
+    @strawberry.field(description="Get a list of brokers.")
     def brokers(
         self,
         order_by: str,
@@ -76,3 +82,13 @@ class Query:
             offset=offset,
             filters=filters,
         )
+    
+    @strawberry.field(description="Get a broker record.")
+    def broker(self, id: str) -> Broker:
+        broker = table.query(
+            KeyConditionExpression=Key('id').eq(id)
+        )["Items"]
+        if not broker:
+            raise Exception("broker not found")
+        broker = broker[0]
+        return Broker.from_row(broker)

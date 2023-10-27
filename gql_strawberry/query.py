@@ -3,7 +3,6 @@ import strawberry
 import boto3
 from boto3.dynamodb.conditions import Key, Attr
 from .type import Broker
-from .data import brokers
 
 
 dynamodb = boto3.resource('dynamodb')
@@ -69,8 +68,15 @@ class Query:
         offset: int = 0,
         name: str | None = None,
     ) -> PaginationWindow[Broker]:
-        filters = {}
 
+        response = table.scan()
+        brokers = response['Items']
+
+        while 'LastEvaluatedKey' in response:
+            response = table.scan(ExclusiveStartKey=response['LastEvaluatedKey'])
+            brokers.extend(response['Items'])
+
+        filters = {}
         if name:
             filters["name"] = name
 

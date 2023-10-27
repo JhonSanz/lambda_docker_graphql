@@ -1,8 +1,8 @@
 import uuid
 import boto3
+from boto3.dynamodb.conditions import Key, Attr
 import strawberry
 from .type import Broker
-from .data import brokers
 
 
 dynamodb = boto3.resource('dynamodb')
@@ -29,16 +29,16 @@ class Mutation:
 
     @strawberry.field
     def delete_broker(self, id: str) -> Broker:
-        to_delete = list(filter(lambda x: x["id"] == id, brokers))
-        if not to_delete:
-            raise Exception("Broker does not exist")
-        to_delete = to_delete[0]
-        brokers.remove(to_delete)
-        return Broker.from_row({
-            "id": to_delete["id"],
-            "name": to_delete["name"],
-            "website": to_delete["website"]
-        })
+        broker = table.query(
+            KeyConditionExpression=Key('id').eq(id)
+        )["Items"]
+        if not broker:
+            raise Exception("broker not found")
+        table.delete_item(
+            Key={"id": id},
+        )
+        broker = broker[0]
+        return Broker.from_row(broker)
 
     @strawberry.field
     def update_broker(id: str, name: str = "", website: str = "") -> Broker:

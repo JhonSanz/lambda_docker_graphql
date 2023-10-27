@@ -15,10 +15,10 @@ class Creator:
     
     def create_query(self):
         name = self.strawberry_type.__strawberry_definition__.name.lower()
-        if (self.check_file_exists(self.path_to_save)):
+        if (self.check_file_exists(self.path_to_save + "/query.py")):
             print(f"File already exists in {self.path}")
             return
-        with open(self.path_to_save, "w") as f:
+        with open(self.path_to_save + "/query.py", "w") as f:
             f.write(
                 "import strawberry\n"
                 "import boto3\n"
@@ -27,7 +27,7 @@ class Creator:
                 f"from .utils import PaginationWindow, get_pagination_window\n"
                 "\n""\n"
                 "dynamodb = boto3.resource('dynamodb')\n"
-                f"table = dynamodb.Table('{name}')\n"
+                f"table = dynamodb.Table('{name}')\n\n"
                 "@strawberry.type\n"
                 "class Query:\n"
                 f"\t@strawberry.field(description='Get a list of {name}')\n"
@@ -68,9 +68,9 @@ class Creator:
     def create_mutations(self):
         name = self.strawberry_type.__strawberry_definition__.name.lower()
 
-        # if (self.check_file_exists(self.path_to_save)):
-        #     print(f"File already exists in {self.path_to_save}")
-        #     return
+        if (self.check_file_exists(self.path_to_save + "/mutations.py")):
+            print(f"File already exists in {self.path_to_save}/mutations.py")
+            return
 
         all_fields = [
             {"field": field, "data": str(f_type).split("'")[1]}
@@ -109,7 +109,7 @@ class Creator:
             ]
         )
 
-        with open(self.path_to_save, "w") as f:
+        with open(self.path_to_save + "/mutations.py", "w") as f:
             f.write(
                 "import uuid\n"
                 "import boto3\n"
@@ -166,5 +166,51 @@ class Creator:
                 "\t\t})"
             )
 
-# Creator(Account, "account/query.py").create_query()
-Creator(Account, "account/mutations.py").create_mutations()
+    def create_lambda(self):
+        name = self.strawberry_type.__strawberry_definition__.name.lower()
+
+        if (self.check_file_exists(self.path_to_save + "/lambda_function.py")):
+            print(f"File already exists in {self.path_to_save}/lambda_function.py")
+            return
+
+        with open(self.path_to_save + "/lambda_function.py", "w") as f:
+            f.write(
+                "import json\n"
+                "import strawberry\n"
+                f"from {name}.query import Query\n"
+                f"from {name}.mutations import Mutation\n\n"
+                "def handler(event, context):\n"
+                "\tbody = json.loads(event['body'])\n"
+                "\tif not body.get('query'):\n"
+                "\t\treturn {\n"
+                "\t\t\t'statusCode': 400,\n"
+                "\t\t\t'body': 'Bad body bro'\n"
+                "\t\t}\n"
+                "\tschema = strawberry.Schema(query=Query, mutation=Mutation)\n"
+                "\tresult = schema.execute_sync(body['query'])\n"
+                "\treturn {\n"
+                "\t\t'statusCode': 200,\n"
+                "\t\t'body': json.dumps(\n"
+                "\t\t\t{\n"
+                "\t\t\t\t'data': result.data,\n"
+                "\t\t\t\t'errors': [\n"
+                "\t\t\t\t\t{\n"
+                "\t\t\t\t\t\t'msg': err.message,\n"
+                "\t\t\t\t\t\t'location': [\n"
+                "\t\t\t\t\t\t\t{'line': loc.line, 'column': loc.column}\n"
+                "\t\t\t\t\t\t\tfor loc in err.locations\n"
+                "\t\t\t\t\t\t]\n"
+                "\t\t\t\t\t}\n"
+                "\t\t\t\t\tfor err in result.errors\n"
+                "\t\t\t\t] if result.errors else []\n"
+                "\t\t\t}\n"
+                "\t\t)\n"
+                "\t}\n"
+            )
+
+    def run(self):
+        self.create_query()
+        self.create_mutations()
+        self.create_lambda()
+
+Creator(Account, "account").run()

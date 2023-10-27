@@ -7,6 +7,7 @@ from .utils import PaginationWindow, get_pagination_window
 
 dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table('account')
+
 @strawberry.type
 class Query:
 	@strawberry.field(description='Get a list of account')

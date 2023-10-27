@@ -17,7 +17,7 @@ class Broker:
 
     @staticmethod
     def from_row(row: typing.Dict[str, typing.Any]):
-        return Broker(id=row["id"], name=row["name"], website=row["website"])
+        return Broker(**row)
 
     @strawberry.field
     def other(self) -> typing.List[Test]:

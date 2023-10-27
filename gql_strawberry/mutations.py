@@ -12,6 +12,15 @@ table = dynamodb.Table("broker")
 class Mutation:
     @strawberry.field
     def add_broker(self, name: str, website: str) -> Broker:
+        """
+            mutation {
+                addBroker(name: "xm", website: "https://xm.com") {
+                    id
+                    name
+                    website
+                }
+            }
+        """
         id = str(uuid.uuid1())
         new_broker = Broker.from_row({
             "id": id,
@@ -29,6 +38,15 @@ class Mutation:
 
     @strawberry.field
     def delete_broker(self, id: str) -> Broker:
+        """
+            mutation {
+                deleteBroker(id: "73aad074-7441-11ee-a952-d89c679e8b2c") {
+                    id
+                    name
+                    website
+                }
+            }
+        """
         broker = table.query(
             KeyConditionExpression=Key('id').eq(id)
         )["Items"]
@@ -42,6 +60,19 @@ class Mutation:
 
     @strawberry.field
     def update_broker(id: str, name: str = "", website: str = "") -> Broker:
+        """
+            mutation {
+                updateBroker(
+                    id: "73aad073214-7441-11ee-a952-d89c679e8b2c",
+                    name: "xxxm",
+                    website: "https://xm.com"
+                ) {
+                    id
+                    name
+                    website
+                }
+            }
+        """
         to_update = {}
         if name: to_update[":name"] = name
         if website: to_update[":website"] = website
@@ -60,7 +91,7 @@ class Mutation:
         except Exception as e:
             if "ConditionalCheckFailedException" in str(e):
                 raise Exception("Broker does not exist")
-        
+
         return Broker.from_row({
             "id": id,
             "name": response["Attributes"]["name"],

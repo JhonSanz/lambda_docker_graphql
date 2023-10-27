@@ -68,7 +68,16 @@ class Query:
         offset: int = 0,
         name: str | None = None,
     ) -> PaginationWindow[Broker]:
-
+        """
+            {
+            brokers(orderBy: "id", offset: 0, limit: 4) {
+                items {
+                website
+                }
+                totalItemsCount
+            }
+            }
+        """
         response = table.scan()
         brokers = response['Items']
 
@@ -91,6 +100,17 @@ class Query:
     
     @strawberry.field(description="Get a broker record.")
     def broker(self, id: str) -> Broker:
+        """
+            query {
+                broker(id: "73aad074-7441-11ee-a952-d89c679e8b2c") {
+                    id
+                    website
+                    other {
+                        msg
+                    }
+                }
+            }
+        """
         broker = table.query(
             KeyConditionExpression=Key('id').eq(id)
         )["Items"]

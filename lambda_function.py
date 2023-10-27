@@ -1,8 +1,7 @@
 import json
-import boto3
 import strawberry
-from gql_strawberry.query import Query
-from gql_strawberry.mutations import Mutation
+from broker.query import Query
+from broker.mutations import Mutation
 
 
 def handler(event, context):
@@ -12,11 +11,7 @@ def handler(event, context):
             'statusCode': 400,
             'body': "Bad body bro"
         }
-
-    dynamodb = boto3.resource('dynamodb')
-    table = dynamodb.Table("broker")
-
-    schema = strawberry.Schema(query=Query, mutation=Mutation(table=table))
+    schema = strawberry.Schema(query=Query, mutation=Mutation)
     result = schema.execute_sync(body['query'])
     return {
         'statusCode': 200,

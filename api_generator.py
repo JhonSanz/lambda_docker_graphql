@@ -16,7 +16,7 @@ class Creator:
     def create_query(self):
         name = self.strawberry_type.__strawberry_definition__.name.lower()
         if (self.check_file_exists(self.path_to_save + "/query.py")):
-            print(f"File already exists in {self.path}")
+            print(f"File already exists in {self.path_to_save}/query.py")
             return
         with open(self.path_to_save + "/query.py", "w") as f:
             f.write(

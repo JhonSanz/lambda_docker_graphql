@@ -1,7 +1,8 @@
 # from account.type import Account
 # from asset.type import Asset
 # from position.type import Position
-from deposit.type import Deposit
+# from deposit.type import Deposit
+# from money.type import Money
 
 class Creator:
     def __init__(self, strawberry_type, path_to_save):
@@ -219,6 +220,7 @@ class Creator:
 # Creator(Account, "account").run()
 # Creator(Asset, "asset").run()
 # Creator(Position, "position").run()
-Creator(Deposit, "deposit").run()
+# Creator(Deposit, "deposit").run()
+# Creator(Money, "money").run()
 
 

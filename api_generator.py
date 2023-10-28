@@ -1,4 +1,7 @@
-from account.type import Account
+# from account.type import Account
+# from asset.type import Asset
+# from position.type import Position
+from deposit.type import Deposit
 
 class Creator:
     def __init__(self, strawberry_type, path_to_save):
@@ -54,7 +57,7 @@ class Creator:
                 "\t\t\toffset=offset,\n"
                 "\t\t\tfilters=filters,\n"
                 "\t\t)\n\n"
-                "\t@strawberry.field(description='Get a broker record.')\n"
+                f"\t@strawberry.field(description='Get a {name} record.')\n"
                 f"\tdef {name}(self, id: str) -> {name.capitalize()}:\n"
                 f"\t\t{name} = table.query(\n"
                 "\t\t\tKeyConditionExpression=Key('id').eq(id)\n"
@@ -87,7 +90,7 @@ class Creator:
         )
         add_data = ",\n".join(
             [
-                f"\t\t\t\t'{item['field']}': {item['field']}"
+                f"\t\t\t'{item['field']}': {item['field']}"
                 for item in all_fields
             ]
         )
@@ -123,14 +126,11 @@ class Creator:
                 "\t@strawberry.field\n"
                 f"\tdef add_{name}(self, {add}) -> {name.capitalize()}:\n"
                 "\t\tid = str(uuid.uuid1())\n"
-                f"\t\tnew_{name} = {name.capitalize()}.from_row({{ \n"
+                "\t\tdata = {\n"
                 f"{add_data}\n"
-                f"\t\t}})\n"
-                "\t\ttable.put_item(\n"
-                "\t\t\tItem={\n"
-                f"{add_data}\n"
-                "\t\t\t}\n"
-                "\t\t)\n"
+                "\t\t}\n"
+                f"\t\tnew_{name} = {name.capitalize()}.from_row(data)\n"
+                "\t\ttable.put_item(Item=data)\n"
                 f"\t\treturn new_{name}\n\n"
                 "\t@strawberry.field\n"
                 f"\tdef delete_{name}(self, id: str) -> {name.capitalize()}:\n"
@@ -213,4 +213,12 @@ class Creator:
         self.create_mutations()
         self.create_lambda()
 
-Creator(Account, "account").run()
+# Account
+# Asset
+# Position
+# Creator(Account, "account").run()
+# Creator(Asset, "asset").run()
+# Creator(Position, "position").run()
+Creator(Deposit, "deposit").run()
+
+

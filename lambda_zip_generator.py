@@ -6,5 +6,8 @@ def install_dependencies(folder):
     os.system(f"powershell Compress-Archive -Path {folder}_copy/* -CompressionLevel Optimal -DestinationPath {folder}.zip")
     os.system(f"rmdir /s /q {folder}_copy -y")
 
-
-install_dependencies("money")
+for item in [
+    "account", "asset", "broker",
+    "deposit", "money", "position"
+]:
+    install_dependencies(item)

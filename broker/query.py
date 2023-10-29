@@ -1,16 +1,17 @@
 import strawberry
 import boto3
 from boto3.dynamodb.conditions import Key
-from .type import Broker
-from .utils import PaginationWindow, get_pagination_window
+from type import Broker
+from utils import PaginationWindow, get_pagination_window
 
 
-dynamodb = boto3.resource('dynamodb')
+dynamodb = boto3.resource("dynamodb")
 table = dynamodb.Table("broker")
+
 
 @strawberry.type
 class Query:
-    @strawberry.field(description="Get a list of brokers.")
+    @strawberry.field(description="Get a list of broker")
     def brokers(
         self,
         order_by: str,
@@ -18,27 +19,16 @@ class Query:
         offset: int = 0,
         name: str | None = None,
     ) -> PaginationWindow[Broker]:
-        """
-            {
-                brokers(orderBy: "id", offset: 0, limit: 4) {
-                    items {
-                        website
-                    }
-                    totalItemsCount
-                }
-            }
-        """
         response = table.scan()
-        brokers = response['Items']
+        brokers = response["Items"]
 
-        while 'LastEvaluatedKey' in response:
-            response = table.scan(ExclusiveStartKey=response['LastEvaluatedKey'])
-            brokers.extend(response['Items'])
+        while "LastEvaluatedKey" in response:
+            response = table.scan(ExclusiveStartKey=response["LastEvaluatedKey"])
+            brokers.extend(response["Items"])
 
         filters = {}
         if name:
             filters["name"] = name
-
         return get_pagination_window(
             dataset=brokers,
             ItemType=Broker,
@@ -47,23 +37,10 @@ class Query:
             offset=offset,
             filters=filters,
         )
-    
+
     @strawberry.field(description="Get a broker record.")
     def broker(self, id: str) -> Broker:
-        """
-            query {
-                broker(id: "73aad074-7441-11ee-a952-d89c679e8b2c") {
-                    id
-                    website
-                    other {
-                        msg
-                    }
-                }
-            }
-        """
-        broker = table.query(
-            KeyConditionExpression=Key('id').eq(id)
-        )["Items"]
+        broker = table.query(KeyConditionExpression=Key("id").eq(id))["Items"]
         if not broker:
             raise Exception("broker not found")
         broker = broker[0]

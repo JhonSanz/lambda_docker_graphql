@@ -31,3 +31,8 @@ for item in [
 
 ```
 2. enjoy
+
+### Todo
+
+- fix auto zip (check manual zipping)
+- CDK grant access to dynamoDB via lambda rol

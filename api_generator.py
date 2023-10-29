@@ -3,6 +3,7 @@
 # from position.type import Position
 # from deposit.type import Deposit
 # from money.type import Money
+# from broker.type import Broker
 
 class Creator:
     def __init__(self, strawberry_type, path_to_save):
@@ -27,8 +28,8 @@ class Creator:
                 "import strawberry\n"
                 "import boto3\n"
                 "from boto3.dynamodb.conditions import Key\n"
-                f"from .type import {name.capitalize()}\n"
-                f"from .utils import PaginationWindow, get_pagination_window\n"
+                f"from type import {name.capitalize()}\n"
+                f"from utils import PaginationWindow, get_pagination_window\n"
                 "\n""\n"
                 "dynamodb = boto3.resource('dynamodb')\n"
                 f"table = dynamodb.Table('{name}')\n\n"
@@ -119,7 +120,7 @@ class Creator:
                 "import boto3\n"
                 "from boto3.dynamodb.conditions import Key, Attr\n"
                 "import strawberry\n"
-                f"from .type import {name.capitalize()}\n\n"
+                f"from type import {name.capitalize()}\n\n"
                 "dynamodb = boto3.resource('dynamodb')\n"
                 f"table = dynamodb.Table('{name}')\n\n"
                 "@strawberry.type\n"
@@ -178,9 +179,9 @@ class Creator:
             f.write(
                 "import json\n"
                 "import strawberry\n"
-                f"from {name}.query import Query\n"
-                f"from {name}.mutations import Mutation\n\n"
-                "def handler(event, context):\n"
+                f"from query import Query\n"
+                f"from mutations import Mutation\n\n"
+                "def lambda_handler(event, context):\n"
                 "\tbody = json.loads(event['body'])\n"
                 "\tif not body.get('query'):\n"
                 "\t\treturn {\n"
@@ -222,5 +223,4 @@ class Creator:
 # Creator(Position, "position").run()
 # Creator(Deposit, "deposit").run()
 # Creator(Money, "money").run()
-
-
+# Creator(Broker, "broker").run()

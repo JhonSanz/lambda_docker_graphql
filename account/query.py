@@ -1,8 +1,8 @@
 import strawberry
 import boto3
 from boto3.dynamodb.conditions import Key
-from .type import Account
-from .utils import PaginationWindow, get_pagination_window
+from type import Account
+from utils import PaginationWindow, get_pagination_window
 
 
 dynamodb = boto3.resource('dynamodb')
@@ -37,7 +37,7 @@ class Query:
 			filters=filters,
 		)
 
-	@strawberry.field(description='Get a broker record.')
+	@strawberry.field(description='Get a account record.')
 	def account(self, id: str) -> Account:
 		account = table.query(
 			KeyConditionExpression=Key('id').eq(id)

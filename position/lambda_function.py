@@ -1,9 +1,9 @@
 import json
 import strawberry
-from position.query import Query
-from position.mutations import Mutation
+from query import Query
+from mutations import Mutation
 
-def handler(event, context):
+def lambda_handler(event, context):
 	body = json.loads(event['body'])
 	if not body.get('query'):
 		return {

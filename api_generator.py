@@ -1,9 +1,10 @@
-# from account.type import Account
-# from asset.type import Asset
-# from position.type import Position
-# from deposit.type import Deposit
-# from money.type import Money
-# from broker.type import Broker
+from account.type import Account
+from asset.type import Asset
+from broker.type import Broker
+from deposit.type import Deposit
+from money.type import Money
+from position.type import Position
+
 
 class Creator:
     def __init__(self, strawberry_type, path_to_save):
@@ -215,12 +216,10 @@ class Creator:
         self.create_mutations()
         self.create_lambda()
 
-# Account
-# Asset
-# Position
-# Creator(Account, "account").run()
-# Creator(Asset, "asset").run()
-# Creator(Position, "position").run()
-# Creator(Deposit, "deposit").run()
-# Creator(Money, "money").run()
-# Creator(Broker, "broker").run()
+
+Creator(Account, "account").run()
+Creator(Asset, "asset").run()
+Creator(Broker, "broker").run()
+Creator(Deposit, "deposit").run()
+Creator(Money, "money").run()
+Creator(Position, "position").run()

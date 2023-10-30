@@ -17,7 +17,7 @@ class PositionsBackendMicroStack(Stack):
         http_api = apigwv2.HttpApi(self, "positions-backend-micro")
 
         endpoint = "broker"
-        # for
+
         lambda_function = lambda_.Function(
             self, f"{endpoint}EndpointLambda",
             handler="lambda_function.lambda_handler",

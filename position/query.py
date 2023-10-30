@@ -1,8 +1,8 @@
 import strawberry
 import boto3
 from boto3.dynamodb.conditions import Key
-from .type import Position
-from .utils import PaginationWindow, get_pagination_window
+from type import Position
+from utils import PaginationWindow, get_pagination_window
 
 
 dynamodb = boto3.resource('dynamodb')

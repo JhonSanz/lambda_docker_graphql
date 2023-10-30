@@ -8,7 +8,7 @@ def install_dependencies(folder):
     print(f"Install requirements for {folder}")
     os.system(f"pip install -r requirements.txt -t {folder}_copy")
     print(f"Generate zip file for {folder}")
-    os.system(f"cd {folder}_copy && zip -r ../{folder}.zip .")
+    os.system(f"cd {folder}_copy && zip -r ../positions_backend_micro/data/{folder}.zip .")
     os.system(f"rm -rf {folder}_copy")
 
 for item in [

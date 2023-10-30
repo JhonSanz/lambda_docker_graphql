@@ -1,5 +1,5 @@
 import strawberry
-from boto3.dynamodb.conditions import Key, Attr
+from boto3.dynamodb.conditions import Key, Attr, And
 
 
 class FilterManager:
@@ -15,15 +15,17 @@ class FilterManager:
     def generate(self):
         result = {}
         for field, subdict in self.filters.__dict__.items():
-            if type(subdict) is strawberry.UNSET:
+            if type(subdict) is strawberry.unset.UnsetType:
                 continue
             for condition, value in subdict.__dict__.items():
-                if not result.get("KeyConditionExpression"):
-                    result["KeyConditionExpression"] = self.filtering(
+                if type(value) is strawberry.unset.UnsetType:
+                    continue
+                if not result.get("FilterExpression"):
+                    result["FilterExpression"] = self.filtering(
                         field, condition, value
                     )
                 else:
-                    result["KeyConditionExpression"] = result[
-                        "KeyConditionExpression"
+                    result["FilterExpression"] = result[
+                        "FilterExpression"
                     ] & self.filtering(field, condition, value)
         return result

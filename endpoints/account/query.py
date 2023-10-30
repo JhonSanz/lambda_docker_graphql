@@ -7,8 +7,8 @@ from utils import PaginationWindow, get_pagination_window
 from db_query import AccountQuery
 from filters import FilterManager
 
-# dynamodb = boto3.resource('dynamodb')
-# table = dynamodb.Table('account')
+dynamodb = boto3.resource('dynamodb')
+table = dynamodb.Table('accounts')
 
 
 @strawberry.type
@@ -23,20 +23,9 @@ class Query:
 	) -> PaginationWindow[Account]:
 
 		filters = FilterManager(query).generate()
-		print(filters)
+		accounts = table.scan(**filters) # TODO: ver como poner .query con contains
+		accounts = accounts["Items"]
 
-		accounts = [
-			{
-				"id": "1",
-				"name": "fake",
-				"details": "test",
-				"leverage": 1,
-				"account_type": "test",
-				"broker_id": "1"
-			}
-		]
-
-		# accounts = table.scan(**filters)
 		return get_pagination_window(
 			dataset=accounts,
 			ItemType=Account,
@@ -47,18 +36,10 @@ class Query:
 
 	@strawberry.field(description="Get a account record.")
 	def account(self, id: str) -> Account:
-		# account = table.query(
-		# 	KeyConditionExpression=Key('id').eq(id)
-		# )['Items']
-		# if not account:
-		# 	raise Exception('account not found')
-		# account = account[0]
-
-		account = {
-			"id": "1",
-			"name": "fake",
-			"details": "test",
-			"leverage": 1,
-			"account_type": "test",
-		}
+		account = table.query(
+			KeyConditionExpression=Key('id').eq(id)
+		)['Items']
+		if not account:
+			raise Exception('account not found')
+		account = account[0]
 		return Account.from_row(account)

@@ -1,5 +1,11 @@
 import strawberry
 import typing
+from boto3.dynamodb.conditions import Key
+import boto3
+
+
+dynamodb = boto3.resource("dynamodb")
+table = dynamodb.Table("asset")
 
 
 @strawberry.type
@@ -20,6 +26,7 @@ class Asset:
     swap_coeficient: str
     long_swap_coeficient: float
     short_swap_coeficient: float
+    account_id: str
     account: Account
 
     @staticmethod
@@ -27,14 +34,12 @@ class Asset:
         return Asset(**row)
 
     @strawberry.field
-    def related_account(self) -> typing.List[Account]:
-        return [
-            Account(
-                id="1",
-                name="account 1",
-                details="test",
-                leverage=1,
-                account_type="test",
-            ),
+    def account(self) -> Account:
+        table = dynamodb.Table("account")
+        account = table.query(KeyConditionExpression=Key("id").eq(self.account_id))[
+            "Items"
         ]
-
+        if not account:
+            raise Exception("account not found")
+        account = account[0]
+        return Account.from_row(account)

@@ -40,7 +40,7 @@ result = schema.execute_sync(
 				orderBy: "id", offset: 0, limit: 5,
 				query: {
 					name: {
-						exact: "account 1"
+						contains: "account 1"
 					},
 					brokerId: {
 						exact: "1"

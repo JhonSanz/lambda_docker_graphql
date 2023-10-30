@@ -1,4 +1,3 @@
-import typing
 import strawberry
 import boto3
 from boto3.dynamodb.conditions import Key
@@ -23,7 +22,7 @@ class Query:
 	) -> PaginationWindow[Account]:
 
 		filters = FilterManager(query).generate()
-		accounts = table.scan(**filters) # TODO: ver como poner .query con contains
+		accounts = table.scan(**filters)
 		accounts = accounts["Items"]
 
 		return get_pagination_window(

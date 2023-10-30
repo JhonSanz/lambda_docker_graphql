@@ -30,32 +30,32 @@ class Account:
     leverage: float
     account_type: str
     broker_id: str
-    # broker: Broker
-    # deposits: typing.List[Deposit]
+    broker: Broker
+    deposits: typing.List[Deposit]
 
     @staticmethod
     def from_row(row: typing.Dict[str, typing.Any]):
         return Account(**row)
 
-    # @strawberry.field
-    # def broker(self) -> Broker:
-    #     table = dynamodb.Table("broker")
-    #     broker = table.query(KeyConditionExpression=Key("id").eq(self.broker_id))[
-    #         "Items"
-    #     ]
-    #     if not broker:
-    #         raise Exception("broker not found")
-    #     broker = broker[0]
-    #     return Broker.from_row(broker)
-
-
-    def get_total_deposits(self, data):
-        sorted_data = sorted(data, key=lambda x: x["currency"])
-        result = [
-            {"money__currency": key, "total": sum([data["amount"] for data in list(value)])}
-            for key, value in groupby(sorted_data, lambda x: x["currency"])
+    @strawberry.field
+    def broker(self) -> Broker:
+        table = dynamodb.Table("broker")
+        broker = table.query(KeyConditionExpression=Key("id").eq(self.broker_id))[
+            "Items"
         ]
-        return result
+        if not broker:
+            raise Exception("broker not found")
+        broker = broker[0]
+        return Broker.from_row(broker)
+
+
+    # def get_total_deposits(self, data):
+    #     sorted_data = sorted(data, key=lambda x: x["currency"])
+    #     result = [
+    #         {"money__currency": key, "total": sum([data["amount"] for data in list(value)])}
+    #         for key, value in groupby(sorted_data, lambda x: x["currency"])
+    #     ]
+    #     return result
 
     # @strawberry.field
     # def deposits(self) -> typing.List[Deposit]:

@@ -1,9 +1,9 @@
-# from account.type import Account
-# from asset.type import Asset
-# from broker.type import Broker
-# from deposit.type import Deposit
-# from money.type import Money
-# from position.type import Position
+# from endpoints.account.type import Account
+# from endpoints.asset.type import Asset
+from endpoints.broker.type import Broker
+# from endpoints.deposit.type import Deposit
+# from endpoints.money.type import Money
+# from endpoints.position.type import Position
 
 
 class Creator:
@@ -31,7 +31,7 @@ class Creator:
                 "from boto3.dynamodb.conditions import Key\n"
                 f"from type import {name.capitalize()}\n"
                 f"from utils import PaginationWindow, get_pagination_window\n"
-                "from db_query import AccountQuery\n"
+                f"from db_query import {name.capitalize()}Query\n"
                 "from filters import FilterManager\n"
                 "\n""\n"
                 "dynamodb = boto3.resource('dynamodb')\n"
@@ -43,11 +43,12 @@ class Creator:
                 "\t\tself,\n"
                 "\t\torder_by: str,\n"
                 "\t\tlimit: int,\n"
-                "\t\tquery: AccountQuery,\n"
+                f"\t\tquery: {name.capitalize()}Query,\n"
                 "\t\toffset: int = 0,\n"
                 f"\t) -> PaginationWindow[{name.capitalize()}]:\n"
-                "\t\t\tfilters = FilterManager(query).generate()\n"
-                f"\t\t\t{name}s = table.scan(**filters)\n"
+                "\t\tfilters = FilterManager(query).generate()\n"
+                f"\t\t{name}s = table.scan(**filters)\n"
+                f"\t\t{name}s = {name}s['Items']\n"
                 "\t\treturn get_pagination_window(\n"
                 f"\t\t\tdataset={name}s,\n"
                 f"\t\t\tItemType={name.capitalize()},\n"
@@ -237,10 +238,10 @@ class Creator:
         self.create_lambda()
         self.create_db_query()
 
-subdir = "endpoints"
+subdir = "endpoints/"
 # Creator(Account, subdir + "account").run()
 # Creator(Asset, subdir + "asset").run()
-# Creator(Broker, subdir + "broker").run()
+Creator(Broker, subdir + "broker").run()
 # Creator(Deposit, subdir + "deposit").run()
 # Creator(Money, subdir + "money").run()
 # Creator(Position, subdir + "position").run()

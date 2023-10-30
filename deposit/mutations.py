@@ -10,12 +10,14 @@ table = dynamodb.Table('deposit')
 @strawberry.type
 class Mutation:
 	@strawberry.field
-	def add_deposit(self, quantity: float, date_deposit: str, description: str) -> Deposit:
+	def add_deposit(self, quantity: float, date_deposit: str, money_id: str, currency: str, description: str) -> Deposit:
 		id = str(uuid.uuid1())
 		data = {
 			'id': id,
 			'quantity': quantity,
 			'date_deposit': date_deposit,
+			'money_id': money_id,
+			'currency': currency,
 			'description': description
 		}
 		new_deposit = Deposit.from_row(data)
@@ -58,5 +60,7 @@ class Mutation:
 			'id': id,
 			'quantity': response['Attributes']['quantity'],
 			'date_deposit': response['Attributes']['date_deposit'],
+			'money_id': response['Attributes']['money_id'],
+			'currency': response['Attributes']['currency'],
 			'description': response['Attributes']['description']
 		})

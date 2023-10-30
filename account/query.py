@@ -1,48 +1,64 @@
+import typing
 import strawberry
 import boto3
 from boto3.dynamodb.conditions import Key
 from type import Account
 from utils import PaginationWindow, get_pagination_window
+from db_query import AccountQuery
+from filters import FilterManager
 
+# dynamodb = boto3.resource('dynamodb')
+# table = dynamodb.Table('account')
 
-dynamodb = boto3.resource('dynamodb')
-table = dynamodb.Table('account')
 
 @strawberry.type
 class Query:
-	@strawberry.field(description='Get a list of account')
+	@strawberry.field(description="Get a list of account")
 	def accounts(
 		self,
 		order_by: str,
 		limit: int,
+		query: AccountQuery,
 		offset: int = 0,
-		name: str | None = None,
 	) -> PaginationWindow[Account]:
-		response = table.scan()
-		accounts = response['Items']
 
-		while 'LastEvaluatedKey' in response:
-			response = table.scan(ExclusiveStartKey=response['LastEvaluatedKey'])
-			accounts.extend(response['Items'])
+		filters = FilterManager(query).generate()
+		print(filters)
 
-		filters = {}
-		if name:
-			filters['name'] = name
+		accounts = [
+			{
+				"id": "1",
+				"name": "fake",
+				"details": "test",
+				"leverage": 1,
+				"account_type": "test",
+				"broker_id": "1"
+			}
+		]
+
+		# accounts = table.scan(**filters)
 		return get_pagination_window(
 			dataset=accounts,
 			ItemType=Account,
 			order_by=order_by,
 			limit=limit,
 			offset=offset,
-			filters=filters,
 		)
 
-	@strawberry.field(description='Get a account record.')
+	@strawberry.field(description="Get a account record.")
 	def account(self, id: str) -> Account:
-		account = table.query(
-			KeyConditionExpression=Key('id').eq(id)
-		)['Items']
-		if not account:
-			raise Exception('account not found')
-		account = account[0]
+		# account = table.query(
+		# 	KeyConditionExpression=Key('id').eq(id)
+		# )['Items']
+		# if not account:
+		# 	raise Exception('account not found')
+		# account = account[0]
+
+		account = {
+			"id": "1",
+			"name": "fake",
+			"details": "test",
+			"leverage": 1,
+			"account_type": "test",
+		}
 		return Account.from_row(account)

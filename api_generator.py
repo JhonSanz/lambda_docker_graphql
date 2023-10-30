@@ -1,9 +1,9 @@
-from account.type import Account
-from asset.type import Asset
-from broker.type import Broker
-from deposit.type import Deposit
-from money.type import Money
-from position.type import Position
+# from account.type import Account
+# from asset.type import Asset
+# from broker.type import Broker
+# from deposit.type import Deposit
+# from money.type import Money
+# from position.type import Position
 
 
 class Creator:
@@ -31,6 +31,8 @@ class Creator:
                 "from boto3.dynamodb.conditions import Key\n"
                 f"from type import {name.capitalize()}\n"
                 f"from utils import PaginationWindow, get_pagination_window\n"
+                "from db_query import AccountQuery\n"
+                "from filters import FilterManager\n"
                 "\n""\n"
                 "dynamodb = boto3.resource('dynamodb')\n"
                 f"table = dynamodb.Table('{name}')\n\n"
@@ -41,17 +43,11 @@ class Creator:
                 "\t\tself,\n"
                 "\t\torder_by: str,\n"
                 "\t\tlimit: int,\n"
+                "\t\tquery: AccountQuery,\n"
                 "\t\toffset: int = 0,\n"
-                "\t\tname: str | None = None,\n"
                 f"\t) -> PaginationWindow[{name.capitalize()}]:\n"
-                "\t\tresponse = table.scan()\n"
-                f"\t\t{name}s = response['Items']\n\n"
-                "\t\twhile 'LastEvaluatedKey' in response:\n"
-                "\t\t\tresponse = table.scan(ExclusiveStartKey=response['LastEvaluatedKey'])\n"
-                f"\t\t\t{name}s.extend(response['Items'])\n\n"
-                "\t\tfilters = {}\n"
-                "\t\tif name:\n"
-                "\t\t\tfilters['name'] = name\n"
+                "\t\t\tfilters = FilterManager(query).generate()\n"
+                f"\t\t\t{name}s = table.scan(**filters)\n"
                 "\t\treturn get_pagination_window(\n"
                 f"\t\t\tdataset={name}s,\n"
                 f"\t\t\tItemType={name.capitalize()},\n"
@@ -170,8 +166,6 @@ class Creator:
             )
 
     def create_lambda(self):
-        name = self.strawberry_type.__strawberry_definition__.name.lower()
-
         if (self.check_file_exists(self.path_to_save + "/lambda_function.py")):
             print(f"File already exists in {self.path_to_save}/lambda_function.py")
             return
@@ -210,16 +204,43 @@ class Creator:
                 "\t\t)\n"
                 "\t}\n"
             )
+    
+    def create_db_query(self):
+        name = self.strawberry_type.__strawberry_definition__.name.lower()
+
+        if (self.check_file_exists(self.path_to_save + "/db_query.py")):
+            print(f"File already exists in {self.path_to_save}/db_query.py")
+            return
+
+        all_fields = [
+            {"field": field, "data": str(f_type).split("'")[1]}
+            for field, f_type in self.strawberry_type.__dict__["__annotations__"].items()
+            if f_type in [str, float, int, bool]
+        ]
+        fields = "\n".join(
+            ["\t" + field["field"] + ": ComparisonOperators[str] | None = strawberry.UNSET"
+              for field in all_fields if field["field"] != "id"]
+        )
+
+        with open(self.path_to_save + "/db_query.py", "w") as f:
+            f.write(
+                "import strawberry\n"
+                "from comparison import ComparisonOperators\n\n\n"
+                "@strawberry.input\n"
+                f"class {name.capitalize()}Query:\n"
+                f"{fields}"
+            )
 
     def run(self):
         self.create_query()
         self.create_mutations()
         self.create_lambda()
+        self.create_db_query()
 
 
-Creator(Account, "account").run()
-Creator(Asset, "asset").run()
-Creator(Broker, "broker").run()
-Creator(Deposit, "deposit").run()
-Creator(Money, "money").run()
-Creator(Position, "position").run()
+# Creator(Account, "account").run()
+# Creator(Asset, "asset").run()
+# Creator(Broker, "broker").run()
+# Creator(Deposit, "deposit").run()
+# Creator(Money, "money").run()
+# Creator(Position, "position").run()

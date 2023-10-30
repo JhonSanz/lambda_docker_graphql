@@ -237,10 +237,10 @@ class Creator:
         self.create_lambda()
         self.create_db_query()
 
-
-# Creator(Account, "account").run()
-# Creator(Asset, "asset").run()
-# Creator(Broker, "broker").run()
-# Creator(Deposit, "deposit").run()
-# Creator(Money, "money").run()
-# Creator(Position, "position").run()
+subdir = "endpoints"
+# Creator(Account, subdir + "account").run()
+# Creator(Asset, subdir + "asset").run()
+# Creator(Broker, subdir + "broker").run()
+# Creator(Deposit, subdir + "deposit").run()
+# Creator(Money, subdir + "money").run()
+# Creator(Position, subdir + "position").run()

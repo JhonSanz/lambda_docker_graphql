@@ -17,4 +17,4 @@ for item in [
     "account", "asset", "broker",
     "deposit", "money", "position"
 ]:
-    install_dependencies(item)
+    install_dependencies("endpoints" + item)

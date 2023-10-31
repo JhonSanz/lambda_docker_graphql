@@ -16,11 +16,12 @@ class Broker:
 
 @strawberry.type
 class Deposit:
-    quantity: float
-    date_deposit: str
-    money: str
-    description: str
+    money__currency: float
+    total: str
 
+    @staticmethod
+    def from_row(row: typing.Dict[str, typing.Any]):
+        return Deposit(**row)
 
 @strawberry.type
 class Account:
@@ -48,19 +49,19 @@ class Account:
         broker = broker[0]
         return Broker.from_row(broker)
 
+    def get_total_deposits(self, data):
+        sorted_data = sorted(data, key=lambda x: x["currency"])
+        result = [
+            Deposit.from_row({
+                "money__currency": key,
+                "total": sum([data["amount"] for data in list(value)]),
+            })
+            for key, value in groupby(sorted_data, lambda x: x["currency"])
+        ]
+        return result
 
-    # def get_total_deposits(self, data):
-    #     sorted_data = sorted(data, key=lambda x: x["currency"])
-    #     result = [
-    #         {"money__currency": key, "total": sum([data["amount"] for data in list(value)])}
-    #         for key, value in groupby(sorted_data, lambda x: x["currency"])
-    #     ]
-    #     return result
-
-    # @strawberry.field
-    # def deposits(self) -> typing.List[Deposit]:
-    #     table = dynamodb.Table("deposit")
-    #     deposits = table.query(KeyConditionExpression=Key("id").eq(self.deposits_id))[
-    #         "Items"
-    #     ]
-    #     return self.get_total_deposits(deposits)
+    @strawberry.field
+    def deposits(self) -> typing.List[Deposit]:
+        table = dynamodb.Table("deposit")
+        deposits = table.scan(FilterExpression=Key("account_id").eq(self.id))["Items"]
+        return self.get_total_deposits(deposits)

@@ -3,6 +3,7 @@ import boto3
 from boto3.dynamodb.conditions import Key, Attr
 import strawberry
 from type import Asset
+from decimal import Decimal
 
 dynamodb = boto3.resource("dynamodb")
 table = dynamodb.Table("asset")
@@ -28,8 +29,8 @@ class Mutation:
             "presition": presition,
             "lot": lot,
             "swap_coeficient": swap_coeficient,
-            "long_swap_coeficient": long_swap_coeficient,
-            "short_swap_coeficient": short_swap_coeficient,
+            "long_swap_coeficient": Decimal(long_swap_coeficient),
+            "short_swap_coeficient": Decimal(short_swap_coeficient),
             "account_id": account_id,
         }
         new_asset = Asset.from_row(data)

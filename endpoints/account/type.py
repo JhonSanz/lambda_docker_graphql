@@ -14,6 +14,10 @@ class Broker:
     name: str
     website: str
 
+    @staticmethod
+    def from_row(row: typing.Dict[str, typing.Any]):
+        return Broker(**row)
+
 
 @strawberry.type
 class Deposit:

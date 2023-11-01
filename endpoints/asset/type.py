@@ -16,6 +16,9 @@ class Account:
     leverage: float
     account_type: str
 
+    def from_row(row: typing.Dict[str, typing.Any]):
+        return Account(**row)
+
 
 @strawberry.type
 class Asset:

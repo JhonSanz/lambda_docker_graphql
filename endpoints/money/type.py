@@ -10,3 +10,6 @@ dynamodb = boto3.resource("dynamodb")
 class Money:
     id: str
     currency: str
+
+    def from_row(row: typing.Dict[str, typing.Any]):
+        return Money(**row)

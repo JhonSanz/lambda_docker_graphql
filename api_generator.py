@@ -88,9 +88,13 @@ class Creator:
                 filtered_id
             ]
         )
+
+        def get_decimal_exception(item):
+            return f'Decimal({item["field"]})' if item['data'] == 'float' else item['field']
+
         add_data = ",\n".join(
             [
-                f"\t\t\t'{item['field']}': {item['field']}"
+                f"\t\t\t'{item['field']}': {get_decimal_exception(item)}"
                 for item in all_fields
             ]
         )
@@ -115,6 +119,7 @@ class Creator:
         with open(self.path_to_save + "/mutations.py", "w") as f:
             f.write(
                 "import uuid\n"
+                "from decimal import Decimal\n"
                 "import boto3\n"
                 "from boto3.dynamodb.conditions import Key, Attr\n"
                 "import strawberry\n"

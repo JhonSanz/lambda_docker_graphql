@@ -55,25 +55,22 @@ class Mutation:
         broker_id: str,
     ) -> Account:
         to_update = {}
-        if name:
-            to_update[":name"] = name
-        if details:
-            to_update[":details"] = details
-        if leverage:
-            to_update[":leverage"] = leverage
-        if account_type:
-            to_update[":account_type"] = account_type
-        if broker_id:
-            to_update[":broker_id"] = broker_id
+        to_update[":name"] = name
+        to_update[":details"] = details
+        to_update[":leverage"] = leverage
+        to_update[":account_type"] = account_type
+        to_update[":broker_id"] = broker_id
         response = None
         try:
             response = table.update_item(
                 Key={"id": id},
-                UpdateExpression="SET name = :name, details = :details, leverage = :leverage, account_type = :account_type, broker_id = :broker_id",
+                UpdateExpression="SET #name_ = :name, details = :details, leverage = :leverage, account_type = :account_type, broker_id = :broker_id",
                 ExpressionAttributeValues=to_update,
                 ReturnValues="UPDATED_NEW",
                 ConditionExpression="attribute_exists(id)",
-                ExpressionAttributeNames={},
+                ExpressionAttributeNames={
+                    "#name_": "name"
+                },
             )
         except Exception as e:
             if "ConditionalCheckFailedException" in str(e):

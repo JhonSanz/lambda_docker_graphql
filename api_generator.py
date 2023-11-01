@@ -99,11 +99,10 @@ class Creator:
         )
         updating_fileds = "\n".join(
             [
-                f"\t\tif {item['field']}: to_update[':{item['field']}'] = {item['field']}"
+                f"\t\tto_update[':{item['field']}'] = {item['field']}"
                 for item in filtered_id
             ]
         )
-        updating_dynamo_expression = "SET #broker_name = :name, website = :website"
         updating_dynamo_expression = "SET " + ", ".join([
             f"{item['field']} = :{item['field']}"
             for item in filtered_id

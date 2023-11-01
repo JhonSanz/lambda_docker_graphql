@@ -61,29 +61,24 @@ class Mutation:
         account_id: str,
     ) -> Asset:
         to_update = {}
-        if name:
-            to_update[":name"] = name
-        if presition:
-            to_update[":presition"] = presition
-        if lot:
-            to_update[":lot"] = lot
-        if swap_coeficient:
-            to_update[":swap_coeficient"] = swap_coeficient
-        if long_swap_coeficient:
-            to_update[":long_swap_coeficient"] = long_swap_coeficient
-        if short_swap_coeficient:
-            to_update[":short_swap_coeficient"] = short_swap_coeficient
-        if account_id:
-            to_update[":account_id"] = account_id
+        to_update[":name"] = name
+        to_update[":presition"] = presition
+        to_update[":lot"] = lot
+        to_update[":swap_coeficient"] = swap_coeficient
+        to_update[":long_swap_coeficient"] = long_swap_coeficient
+        to_update[":short_swap_coeficient"] = short_swap_coeficient
+        to_update[":account_id"] = account_id
         response = None
         try:
             response = table.update_item(
                 Key={"id": id},
-                UpdateExpression="SET name = :name, presition = :presition, lot = :lot, swap_coeficient = :swap_coeficient, long_swap_coeficient = :long_swap_coeficient, short_swap_coeficient = :short_swap_coeficient, account_id = :account_id",
+                UpdateExpression="SET #name_ = :name, presition = :presition, lot = :lot, swap_coeficient = :swap_coeficient, long_swap_coeficient = :long_swap_coeficient, short_swap_coeficient = :short_swap_coeficient, account_id = :account_id",
                 ExpressionAttributeValues=to_update,
                 ReturnValues="UPDATED_NEW",
                 ConditionExpression="attribute_exists(id)",
-                ExpressionAttributeNames={},
+                ExpressionAttributeNames={
+                    "#name_": "name"
+                },
             )
         except Exception as e:
             if "ConditionalCheckFailedException" in str(e):

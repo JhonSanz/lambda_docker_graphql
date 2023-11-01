@@ -4,6 +4,7 @@ import strawberry
 import boto3
 from boto3.dynamodb.conditions import Key
 
+
 dynamodb = boto3.resource("dynamodb")
 
 
@@ -22,6 +23,7 @@ class Deposit:
     @staticmethod
     def from_row(row: typing.Dict[str, typing.Any]):
         return Deposit(**row)
+
 
 @strawberry.type
 class Account:
@@ -52,10 +54,12 @@ class Account:
     def get_total_deposits(self, data):
         sorted_data = sorted(data, key=lambda x: x["currency"])
         result = [
-            Deposit.from_row({
-                "money__currency": key,
-                "total": sum([data["amount"] for data in list(value)]),
-            })
+            Deposit.from_row(
+                {
+                    "money__currency": key,
+                    "total": sum([data["amount"] for data in list(value)]),
+                }
+            )
             for key, value in groupby(sorted_data, lambda x: x["currency"])
         ]
         return result

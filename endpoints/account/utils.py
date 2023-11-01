@@ -1,6 +1,5 @@
 import typing
 import strawberry
-from type import Broker
 
 
 Item = typing.TypeVar("Item")
@@ -28,7 +27,7 @@ def matches(item, filters):
 
 
 def get_pagination_window(
-    dataset: typing.List[Broker],
+    dataset: typing.List[typing.Any],
     ItemType: type,
     order_by: str,
     limit: int,
@@ -53,4 +52,3 @@ def get_pagination_window(
     items = dataset[offset : offset + limit]
     items = [ItemType.from_row(x) for x in items]
     return PaginationWindow(items=items, total_items_count=total_items_count)
-

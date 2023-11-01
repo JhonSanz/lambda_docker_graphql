@@ -3,6 +3,7 @@ import boto3
 from boto3.dynamodb.conditions import Key, Attr
 import strawberry
 from type import Account
+from decimal import Decimal
 
 dynamodb = boto3.resource("dynamodb")
 table = dynamodb.Table("account")
@@ -24,7 +25,7 @@ class Mutation:
             "id": id,
             "name": name,
             "details": details,
-            "leverage": leverage,
+            "leverage": Decimal(leverage),
             "account_type": account_type,
             "broker_id": broker_id,
         }

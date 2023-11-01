@@ -7,7 +7,7 @@ from db_query import AccountQuery
 from filters import FilterManager
 
 dynamodb = boto3.resource('dynamodb')
-table = dynamodb.Table('accounts')
+table = dynamodb.Table('account')
 
 
 @strawberry.type

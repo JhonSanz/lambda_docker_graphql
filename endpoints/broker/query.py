@@ -30,7 +30,6 @@ class Query:
             order_by=order_by,
             limit=limit,
             offset=offset,
-            filters=filters,
         )
 
     @strawberry.field(description="Get a broker record.")

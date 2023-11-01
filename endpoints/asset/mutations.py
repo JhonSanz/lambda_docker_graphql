@@ -1,9 +1,9 @@
 import uuid
+from decimal import Decimal
 import boto3
 from boto3.dynamodb.conditions import Key, Attr
 import strawberry
 from type import Asset
-from decimal import Decimal
 
 dynamodb = boto3.resource("dynamodb")
 table = dynamodb.Table("asset")

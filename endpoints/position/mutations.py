@@ -1,4 +1,5 @@
 import uuid
+from decimal import Decimal
 import boto3
 from boto3.dynamodb.conditions import Key, Attr
 import strawberry
@@ -30,8 +31,8 @@ class Mutation:
             "reference_id": reference_id,
             "open_date": open_date,
             "close_date": close_date,
-            "price": price,
-            "volume": volume,
+            "price": Decimal(price),
+            "volume": Decimal(volume),
             "is_leveraged": is_leveraged,
             "order_type": order_type,
             "direction": direction,

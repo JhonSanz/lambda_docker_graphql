@@ -1,8 +1,8 @@
-# from endpoints.account.type import Account
-# from endpoints.asset.type import Asset
-# from endpoints.broker.type import Broker
-# from endpoints.deposit.type import Deposit
-# from endpoints.money.type import Money
+from endpoints.account.type import Account
+from endpoints.asset.type import Asset
+from endpoints.broker.type import Broker
+from endpoints.deposit.type import Deposit
+from endpoints.money.type import Money
 from endpoints.position.type import Position
 
 
@@ -243,9 +243,9 @@ class Creator:
         self.create_db_query()
 
 subdir = "endpoints/"
-# Creator(Account, subdir + "account").run()
-# Creator(Asset, subdir + "asset").run()
-# Creator(Broker, subdir + "broker").run()
-# Creator(Deposit, subdir + "deposit").run()
-# Creator(Money, subdir + "money").run()
+Creator(Account, subdir + "account").run()
+Creator(Asset, subdir + "asset").run()
+Creator(Broker, subdir + "broker").run()
+Creator(Deposit, subdir + "deposit").run()
+Creator(Money, subdir + "money").run()
 Creator(Position, subdir + "position").run()

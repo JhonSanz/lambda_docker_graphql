@@ -1,4 +1,5 @@
 import uuid
+from decimal import Decimal
 import boto3
 from boto3.dynamodb.conditions import Key, Attr
 import strawberry
@@ -23,7 +24,7 @@ class Mutation:
         id = str(uuid.uuid1())
         data = {
             "id": id,
-            "quantity": quantity,
+            "quantity": Decimal(quantity),
             "date_deposit": date_deposit,
             "account_id": account_id,
             "money_id": money_id,

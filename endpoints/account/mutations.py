@@ -1,9 +1,9 @@
 import uuid
+from decimal import Decimal
 import boto3
 from boto3.dynamodb.conditions import Key, Attr
 import strawberry
 from type import Account
-from decimal import Decimal
 
 dynamodb = boto3.resource("dynamodb")
 table = dynamodb.Table("account")
@@ -52,6 +52,7 @@ class Mutation:
         details: str,
         leverage: float,
         account_type: str,
+        broker_id: str,
     ) -> Account:
         to_update = {}
         if name:
@@ -62,11 +63,13 @@ class Mutation:
             to_update[":leverage"] = leverage
         if account_type:
             to_update[":account_type"] = account_type
+        if broker_id:
+            to_update[":broker_id"] = broker_id
         response = None
         try:
             response = table.update_item(
                 Key={"id": id},
-                UpdateExpression="SET name = :name, details = :details, leverage = :leverage, account_type = :account_type",
+                UpdateExpression="SET name = :name, details = :details, leverage = :leverage, account_type = :account_type, broker_id = :broker_id",
                 ExpressionAttributeValues=to_update,
                 ReturnValues="UPDATED_NEW",
                 ConditionExpression="attribute_exists(id)",
@@ -82,5 +85,6 @@ class Mutation:
                 "details": response["Attributes"]["details"],
                 "leverage": response["Attributes"]["leverage"],
                 "account_type": response["Attributes"]["account_type"],
+                "broker_id": response["Attributes"]["broker_id"],
             }
         )

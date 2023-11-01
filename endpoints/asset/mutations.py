@@ -65,8 +65,8 @@ class Mutation:
         to_update[":presition"] = presition
         to_update[":lot"] = lot
         to_update[":swap_coeficient"] = swap_coeficient
-        to_update[":long_swap_coeficient"] = long_swap_coeficient
-        to_update[":short_swap_coeficient"] = short_swap_coeficient
+        to_update[":long_swap_coeficient"] = Decimal(long_swap_coeficient)
+        to_update[":short_swap_coeficient"] = Decimal(short_swap_coeficient)
         to_update[":account_id"] = account_id
         response = None
         try:

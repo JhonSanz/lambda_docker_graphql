@@ -58,7 +58,7 @@ class Mutation:
         description: str,
     ) -> Deposit:
         to_update = {}
-        to_update[":quantity"] = quantity
+        to_update[":quantity"] = Decimal(quantity)
         to_update[":date_deposit"] = date_deposit
         to_update[":account_id"] = account_id
         to_update[":money_id"] = money_id

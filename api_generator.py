@@ -99,7 +99,7 @@ class Creator:
         )
         updating_fileds = "\n".join(
             [
-                f"\t\tto_update[':{item['field']}'] = {item['field']}"
+                f"\t\tto_update[':{item['field']}'] = {get_decimal_exception(item)}"
                 for item in filtered_id
             ]
         )

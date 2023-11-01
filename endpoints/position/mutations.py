@@ -73,8 +73,8 @@ class Mutation:
         to_update[":reference_id"] = reference_id
         to_update[":open_date"] = open_date
         to_update[":close_date"] = close_date
-        to_update[":price"] = price
-        to_update[":volume"] = volume
+        to_update[":price"] = Decimal(price)
+        to_update[":volume"] = Decimal(volume)
         to_update[":is_leveraged"] = is_leveraged
         to_update[":order_type"] = order_type
         to_update[":direction"] = direction

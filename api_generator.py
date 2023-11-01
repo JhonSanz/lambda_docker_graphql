@@ -55,7 +55,6 @@ class Creator:
                 "\t\t\torder_by=order_by,\n"
                 "\t\t\tlimit=limit,\n"
                 "\t\t\toffset=offset,\n"
-                "\t\t\tfilters=filters,\n"
                 "\t\t)\n\n"
                 f"\t@strawberry.field(description='Get a {name} record.')\n"
                 f"\tdef {name}(self, id: str) -> {name.capitalize()}:\n"

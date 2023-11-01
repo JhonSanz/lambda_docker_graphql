@@ -15,6 +15,7 @@ class Asset:
     swap_coeficient: str
     long_swap_coeficient: float
     short_swap_coeficient: float
+    account_id: str
 
     @staticmethod
     def from_row(row: typing.Dict[str, typing.Any]):

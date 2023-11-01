@@ -75,6 +75,7 @@ class Mutation:
         except Exception as e:
             if "ConditionalCheckFailedException" in str(e):
                 raise Exception("Account does not exist")
+            raise Exception(str(e))
         return Account.from_row(
             {
                 "id": id,

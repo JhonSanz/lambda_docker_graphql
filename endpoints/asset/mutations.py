@@ -76,13 +76,12 @@ class Mutation:
                 ExpressionAttributeValues=to_update,
                 ReturnValues="UPDATED_NEW",
                 ConditionExpression="attribute_exists(id)",
-                ExpressionAttributeNames={
-                    "#name_": "name"
-                },
+                ExpressionAttributeNames={"#name_": "name"},
             )
         except Exception as e:
             if "ConditionalCheckFailedException" in str(e):
                 raise Exception("Asset does not exist")
+            raise Exception(str(e))
         return Asset.from_row(
             {
                 "id": id,

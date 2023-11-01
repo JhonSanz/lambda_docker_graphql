@@ -164,6 +164,7 @@ class Creator:
                 "\t\texcept Exception as e:\n"
                 "\t\t\tif 'ConditionalCheckFailedException' in str(e):\n"
                 f"\t\t\t\traise Exception('{name.capitalize()} does not exist')\n"
+                f"\t\t\traise Exception(str(e))\n"
                 f"\t\treturn {name.capitalize()}.from_row({{\n"
                 f"\t\t\t{updating_response}\n"
                 "\t\t})"

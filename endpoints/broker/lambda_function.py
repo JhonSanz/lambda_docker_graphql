@@ -30,23 +30,3 @@ def lambda_handler(event, context):
 			}
 		)
 	}
-
-
-schema = strawberry.Schema(query=Query, mutation=Mutation)
-result = schema.execute_sync(
-	"""
-			mutation {
-				updateBroker(
-					id: "dfb707c4-78c6-11ee-b781-790e436ee555"
-					name: "Pepperstone :D"
-					website: "https://pepperstone.com :D"
-				) {
-					id
-					name
-					website
-				}
-			}
-	"""
-)
-print(result)
-

@@ -30,32 +30,3 @@ def lambda_handler(event, context):
 			}
 		)
 	}
-
-
-schema = strawberry.Schema(query=Query, mutation=Mutation)
-result = schema.execute_sync(
-	"""
-		{
-			accounts(
-				orderBy: "id", offset: 0, limit: 5,
-				query: {
-					name: {
-						contains: "account 1"
-					},
-					brokerId: {
-						exact: "1"
-					}
-				}
-			) {
-				items {
-					id
-					name
-					details
-					leverage
-				}
-				totalItemsCount
-			}
-		}
-	"""
-)
-print(result)

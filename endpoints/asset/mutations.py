@@ -42,10 +42,14 @@ class Mutation:
         asset = table.query(KeyConditionExpression=Key("id").eq(id))["Items"]
         if not asset:
             raise Exception("asset not found")
-        table.delete_item(
-            Key={"id": id},
-        )
+        table.delete_item(Key={"id": id})
         asset = asset[0]
+
+        positions_table = dynamodb.Table("position")
+        positions = positions_table.scan(FilterExpression=Key("asset_id").eq(id))["Items"]
+        with positions_table.batch_writer() as batch:
+            for item in positions:
+                batch.delete_item(Key={"id": item["id"]})
         return Asset.from_row(asset)
 
     @strawberry.field

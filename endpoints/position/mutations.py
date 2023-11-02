@@ -46,6 +46,11 @@ class Mutation:
     @strawberry.field
     def delete_position(self, id: str) -> Position:
         position = table.query(KeyConditionExpression=Key("id").eq(id))["Items"]
+        subpositions = table.scan(FilterExpression=Key("reference_id").eq(id))["Items"]
+        with table.batch_writer() as batch:
+            for item in subpositions:
+                batch.delete_item(Key={"id": item["id"]})
+
         if not position:
             raise Exception("position not found")
         table.delete_item(

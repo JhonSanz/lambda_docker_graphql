@@ -9,6 +9,7 @@ from aws_cdk import (
 )
 import aws_cdk.aws_apigatewayv2_alpha as apigwv2
 from aws_cdk.aws_apigatewayv2_integrations_alpha import HttpLambdaIntegration
+from aws_cdk.aws_apigatewayv2_authorizers_alpha import HttpUserPoolAuthorizer
 from aws_cdk import RemovalPolicy
 
 
@@ -17,7 +18,9 @@ class PositionsBackendMicroStack(Stack):
         super().__init__(scope, construct_id, **kwargs)
 
         user_pool = cognito.UserPool(
-            user_pool_name="positions-backend-authorizer",
+            self,
+            id="positions-backend-pool",
+            user_pool_name="positions-backend-pool",
             removal_policy=RemovalPolicy.DESTROY,
             self_sign_up_enabled=False,
             sign_in_aliases={"email": True},
@@ -34,17 +37,30 @@ class PositionsBackendMicroStack(Stack):
             mfa=None,
             enable_sms_role=False,
         )
-        # user_pool.add_domain()
+
+        user_pool.add_domain(
+            "positions-backend-domain",
+            cognito_domain=cognito.CognitoDomainOptions(domain_prefix="positions-backend-domain"),
+        )
 
         user_pool_client = cognito.UserPoolClient(
-            user_pool_client_name="positions-backend-authorizer-client",
+            self,
+            id="positions-backend-client",
+            user_pool=user_pool,
+            user_pool_client_name="positions-backend-client",
+            disable_o_auth=False,
             o_auth=cognito.OAuthSettings(
                 flows=cognito.OAuthFlows(authorization_code_grant=True),
                 scopes=[cognito.OAuthScope.OPENID],
-                callback_urls=["https://my-app-domain.com/welcome"],
-                logout_urls=["https://my-app-domain.com/signin"],
+                callback_urls=["https://example.com/"],
+                logout_urls=["https://example.com/"],
             ),
-            
+        )
+
+        authorizer = HttpUserPoolAuthorizer(
+            "positions-backend-authorizer",
+            pool=user_pool,
+            user_pool_clients=[user_pool_client],
         )
 
         http_api = apigwv2.HttpApi(
@@ -83,6 +99,7 @@ class PositionsBackendMicroStack(Stack):
                 path=f"/{endpoint}",
                 methods=[apigwv2.HttpMethod.ANY],
                 integration=books_integration,
+                authorizer=authorizer,
             )
 
             dynamodb.Table(
